@@ -1,0 +1,233 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Petstore server.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters."
+  version: "1.0.0"
+  title: "Swagger Petstore"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "machinecontroller.swagger.io"
+basePath: "/v2"
+tags:
+- name: "machines"
+  description: "Everything about your Machine"
+- name: "statistic"
+  description: "Access to machine statistics"
+schemes:
+- "https"
+- "http"
+paths:
+  /machine:
+    post:
+      tags:
+      - "machines"
+      summary: "Add a new machine"
+      description: ""
+      operationId: "addMachine"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "New machine"
+        required: true
+        schema:
+          $ref: "#/definitions/Machine"
+      responses:
+        200:
+          description: "Success"
+        405:
+          description: "Invalid input"
+
+  /machine/{machineId}:
+    get:
+      tags:
+      - "machines"
+      summary: "Get machine by id"
+      description: ""
+      operationId: "getMachine"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "machineId"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Machine"
+        404:
+          description: "Invalid ID"
+    delete:
+      tags:
+      - "machines"
+      summary: "Update an existing pet"
+      description: ""
+      operationId: "deleteMachine"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "machineId"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Success"
+        404:
+          description: "Machine don't found"
+
+  /statistic:
+    post:
+      tags:
+      - "statistic"
+      summary: "Add new statistic"
+      operationId: "addStatistic"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "machine"
+        in: "query"
+        description: "Machine id"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "statistic"
+        in: "body"
+        description: "Statistic"
+        required: true
+        schema:
+          $ref: "#/definitions/Statistic"
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid status value"
+  
+  /statistic/{machineId}:
+    get:
+      tags:
+      - "statistic"
+      summary: "Get statistic"
+      operationId: "getStatistic"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "machineId"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "period"
+        in: "query"
+        required: false
+        type: "string"
+        enum:
+        - "full"
+        - "last"
+        default: "full" 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "array"
+            items: 
+              $ref: "#/definitions/Statistic"
+        404:
+          description: "Machine doesn't exist"
+          
+securityDefinitions:
+  petstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Machine:
+    type: "object"
+    properties:
+      id:
+        type: integer
+        format: "int64"
+      name:
+        type: string
+      status:
+        type: string
+        enum:
+        - "RUN"
+        - "RUNNING"
+        - "STOPED"
+        - "STOPPING"
+        - "FAILED"
+    xml:
+      name: "Machine"
+  Statistic:
+    type: "object"
+    properties:
+      id:
+        type: integer
+        format: "int64"
+      machineId:
+        type: integer
+        format: "int64"
+      process:
+        type: integer
+      cpuLoad:
+        type: integer
+        format: "uint8"
+      memoryLoad:
+        type: integer
+        format: "uint8"
+      timestamp:
+        type: "string"
+        format: "date-time"
+    xml:
+      name: "Statistic"
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      password:
+        type: "string"
+    xml:
+      name: "User"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
