@@ -1,5 +1,10 @@
+---
 swagger: "2.0"
 info:
+  description: "This is a sample server Petstore server.  You can find out more about\
+    \     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net,\
+    \ #swagger](http://swagger.io/irc/).      For this sample, you can use the api\
+    \ key `special-key` to test the authorization     filters."
   version: "1.0.0"
   title: "Swagger Petstore"
   termsOfService: "http://swagger.io/terms/"
@@ -25,7 +30,7 @@ paths:
       - "machines"
       summary: "Add a new machine"
       description: ""
-      operationId: "addMachine"
+      operationId: "add_machine"
       consumes:
       - "application/json"
       - "application/xml"
@@ -40,18 +45,18 @@ paths:
         schema:
           $ref: "#/definitions/Machine"
       responses:
-        200:
+        "200":
           description: "Success"
-        405:
+        "405":
           description: "Invalid input"
-
+      x-swagger-router-controller: "HWMonitoring.controllers.machines_controller"
   /machine/{machineId}:
     get:
       tags:
       - "machines"
       summary: "Get machine by id"
       description: ""
-      operationId: "getMachine"
+      operationId: "get_machine"
       consumes:
       - "application/json"
       - "application/xml"
@@ -59,23 +64,25 @@ paths:
       - "application/xml"
       - "application/json"
       parameters:
-      - in: "path"
-        name: "machineId"
+      - name: "machineId"
+        in: "path"
         required: true
         type: "integer"
         format: "int64"
       responses:
-        200:
+        "200":
           description: "Success"
           schema:
             $ref: "#/definitions/Machine"
-        404:
+        "404":
           description: "Invalid ID"
+      x-swagger-router-controller: "HWMonitoring.controllers.machines_controller"
     delete:
       tags:
       - "machines"
+      summary: "Update an existing pet"
       description: ""
-      operationId: "deleteMachine"
+      operationId: "delete_machine"
       consumes:
       - "application/json"
       - "application/xml"
@@ -83,23 +90,23 @@ paths:
       - "application/xml"
       - "application/json"
       parameters:
-      - in: "path"
-        name: "machineId"
+      - name: "machineId"
+        in: "path"
         required: true
         type: "integer"
         format: "int64"
       responses:
-        200:
+        "200":
           description: "Success"
-        404:
+        "404":
           description: "Machine don't found"
-
+      x-swagger-router-controller: "HWMonitoring.controllers.machines_controller"
   /statistic:
     post:
       tags:
       - "statistic"
       summary: "Add new statistic"
-      operationId: "addStatistic"
+      operationId: "add_statistic"
       consumes:
       - "application/json"
       - "application/xml"
@@ -113,24 +120,24 @@ paths:
         required: true
         type: "integer"
         format: "int64"
-      - name: "statistic"
-        in: "body"
+      - in: "body"
+        name: "statistic"
         description: "Statistic"
         required: true
         schema:
           $ref: "#/definitions/Statistic"
       responses:
-        200:
+        "200":
           description: "successful operation"
-        400:
+        "400":
           description: "Invalid status value"
-  
+      x-swagger-router-controller: "HWMonitoring.controllers.statistic_controller"
   /statistic/{machineId}:
     get:
       tags:
       - "statistic"
       summary: "Get statistic"
-      operationId: "getStatistic"
+      operationId: "get_statistic"
       consumes:
       - "application/json"
       - "application/xml"
@@ -147,20 +154,20 @@ paths:
         in: "query"
         required: false
         type: "string"
+        default: "full"
         enum:
         - "full"
         - "last"
-        default: "full" 
       responses:
-        200:
+        "200":
           description: "Success"
           schema:
             type: "array"
-            items: 
+            items:
               $ref: "#/definitions/Statistic"
-        404:
+        "404":
           description: "Machine doesn't exist"
-          
+      x-swagger-router-controller: "HWMonitoring.controllers.statistic_controller"
 securityDefinitions:
   petstore_auth:
     type: "oauth2"
@@ -178,12 +185,12 @@ definitions:
     type: "object"
     properties:
       id:
-        type: integer
+        type: "integer"
         format: "int64"
       name:
-        type: string
+        type: "string"
       status:
-        type: string
+        type: "string"
         enum:
         - "RUN"
         - "RUNNING"
@@ -192,28 +199,39 @@ definitions:
         - "FAILED"
     xml:
       name: "Machine"
+    example:
+      id: 0
+      status: "RUN"
+      name: "name"
   Statistic:
     type: "object"
     properties:
       id:
-        type: integer
+        type: "integer"
         format: "int64"
       machineId:
-        type: integer
+        type: "integer"
         format: "int64"
       process:
-        type: integer
+        type: "integer"
       cpuLoad:
-        type: number
-        format: "double"
+        type: "integer"
+        format: "uint8"
       memoryLoad:
-        type: number
-        format: "double"
+        type: "integer"
+        format: "uint8"
       timestamp:
         type: "string"
         format: "date-time"
     xml:
       name: "Statistic"
+    example:
+      timestamp: "2000-01-23T04:56:07.000+00:00"
+      process: 1
+      id: 0
+      memoryLoad: 5
+      machineId: 6
+      cpuLoad: 5
   User:
     type: "object"
     properties:
