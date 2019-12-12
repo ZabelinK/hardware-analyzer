@@ -3,6 +3,8 @@
 from __future__ import absolute_import
 from datetime import date, datetime  # noqa: F401
 
+from HWMonitoring import db
+
 from typing import List, Dict  # noqa: F401
 
 from HWMonitoring.models.base_model_ import Model
@@ -14,6 +16,12 @@ class User(Model):
 
     Do not edit the class manually.
     """
+
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64))
+    password_hash = db.Column(db.Integer)
 
     def __init__(self, id: int=None, username: str=None, password: str=None):  # noqa: E501
         """User - a model defined in Swagger

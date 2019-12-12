@@ -3,6 +3,8 @@
 from __future__ import absolute_import
 from datetime import date, datetime  # noqa: F401
 
+from HWMonitoring import db
+
 from typing import List, Dict  # noqa: F401
 
 from HWMonitoring.models.base_model_ import Model
@@ -15,9 +17,15 @@ class Statistic(Model):
     Do not edit the class manually.
     """
 
+    __tablename__ = "statistic"
+
     id = db.Column(db.Integer, primary_key=True)
-    machine_id = db.Column(db.String(64), ForeingKey('machine.id'), index=True)
-   
+    machine_id = db.relationship("machine_id", secondary="machines", backref="id")
+    process = db.Column(db.Integer)
+    cpu_load = db.Column(db.Integer)
+    memory_load = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime)
+
     def __init__(self, id: int=None, machine_id: int=None, process: int=None, cpu_load: int=None, memory_load: int=None, timestamp: datetime=None):  # noqa: E501
         """Statistic - a model defined in Swagger
 

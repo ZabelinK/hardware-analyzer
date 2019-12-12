@@ -17,6 +17,8 @@ class Machine(Model):
     Do not edit the class manually.
     """
 
+    __tablename__ = "machines"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     status = db.Column(db.String(64), index=True, unique=False)
