@@ -3,10 +3,11 @@ import six
 
 from HWMonitoring.models.machine import Machine  # noqa: E501
 from HWMonitoring import util
-from .models import machine
 
 from HWMonitoring import db
 
+from flask import abort
+import json
 def add_machine(body):  # noqa: E501
     """Add a new machine
 
@@ -17,12 +18,14 @@ def add_machine(body):  # noqa: E501
 
     :rtype: None
     """
-    if connexion.request.is_json:
-        body = Machine.from_dict(connexion.request.get_json())  # noqa: E501
     
-    db.session.add(Machine(name=body['name'], status=body['status']))
-    db.commit()
-    return 'do some magic!'
+    body = json.loads(body.decode("utf-8"))
+    print(Machine.__table__)
+    m = Machine(name_=body['name'], status_=body['status'])
+    print(m)
+    db.session.add(m)
+    db.session.commit() 
+    return m.to_dict()
 
 
 def delete_machine(machineId):  # noqa: E501
@@ -35,8 +38,9 @@ def delete_machine(machineId):  # noqa: E501
 
     :rtype: None
     """
-    return 'do some magic!'
-
+    db.session.delete(Machine.query.filter_by(id=machineId))
+    db.commit()
+    return "SUCCESS"
 
 def get_machine(machineId):  # noqa: E501
     """Get machine by id
@@ -48,5 +52,16 @@ def get_machine(machineId):  # noqa: E501
 
     :rtype: Machine
     """
-    m = Machine.query.filter_by(id=machineId)
-    return str({"id" : m.id, "name" : m.name, "status" : m.status}) 
+    try:
+        return Machine.query.get(machineId).to_dict()
+    except AttributeError:
+        abort(404)
+    except Exception:
+        raise
+
+def get_machines():
+    try:
+        return [m.to_dict() for m in Machine.query.all()]
+        return res
+    except Exception:
+        raise

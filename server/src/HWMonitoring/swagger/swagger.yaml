@@ -50,6 +50,26 @@ paths:
         "405":
           description: "Invalid input"
       x-swagger-router-controller: "HWMonitoring.controllers.machines_controller"
+    get:
+      tags:
+      - "machines"
+      summary: "Get machines by id"
+      description: ""
+      operationId: "get_machines"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Machine"
+      x-swagger-router-controller: "HWMonitoring.controllers.machines_controller"
   /machine/{machineId}:
     get:
       tags:
