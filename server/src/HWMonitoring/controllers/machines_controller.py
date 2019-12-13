@@ -20,7 +20,6 @@ def add_machine(body):  # noqa: E501
     """
     
     body = json.loads(body.decode("utf-8"))
-    print(Machine.__table__)
     m = Machine(name_=body['name'], status_=body['status'])
     print(m)
     db.session.add(m)
@@ -38,7 +37,7 @@ def delete_machine(machineId):  # noqa: E501
 
     :rtype: None
     """
-    db.session.delete(Machine.query.filter_by(id=machineId))
+    db.session.delete(Machine.query.get(machineId))
     db.commit()
     return "SUCCESS"
 
@@ -62,6 +61,5 @@ def get_machine(machineId):  # noqa: E501
 def get_machines():
     try:
         return [m.to_dict() for m in Machine.query.all()]
-        return res
     except Exception:
         raise

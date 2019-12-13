@@ -43,7 +43,7 @@ class Machine(Model, db.Model):
             'name' : self.name_,
             'status' : self.status_
         }
-
+    
     @classmethod
     def from_dict(cls, dikt) -> 'Machine':
         """Returns the dict as a model

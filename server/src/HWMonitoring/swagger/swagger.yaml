@@ -234,19 +234,19 @@ definitions:
         format: "int64"
       process:
         type: "integer"
-      cpuLoad:
+      cpu_load:
         type: "integer"
         format: "uint8"
-      memoryLoad:
+      memory_load:
         type: "integer"
         format: "uint8"
       timestamp:
-        type: "string"
-        format: "date-time"
+        type: "integer"
+        format: "uint64"
     xml:
       name: "Statistic"
     example:
-      timestamp: "2000-01-23T04:56:07.000+00:00"
+      timestamp: 19999999333
       process: 1
       id: 0
       memoryLoad: 5
