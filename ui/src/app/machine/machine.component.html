@@ -1,0 +1,34 @@
+<div class="container mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
+    <mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{'make-background': true }"></mat-row>
+
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let row">
+        <mat-radio-button></mat-radio-button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="machineId">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <td mat-cell *matCellDef="let element">{{element.name}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <td mat-cell *matCellDef="let element"
+          [ngClass]="{'make-green': isGreen(element.status),
+          'make-red': isRed(element.status),
+          'make-yellow': isYellow(element.status)}"
+      >{{element.status}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="image">
+      <td mat-cell *matCellDef="let element">
+        <img src="../../assets/computer_icon.svg" class="machine">
+      </td>
+    </ng-container>
+  </table>
+
+</div>
+

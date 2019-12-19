@@ -1,0 +1,34 @@
+.machine {
+  display: block;
+  margin-right: auto;
+  height: 50px;
+  width: 130px;
+}
+
+mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  border-bottom-color: rgba(0, 0, 0, 0);
+}
+
+.mat-row {
+  height: auto;
+}
+
+.mat-cell {
+  padding: 8px 8px 8px 0;
+}
+
+.make-background {
+  background: aliceblue;
+}
+
+.make-green {
+  color:green;
+}
+
+.make-yellow {
+  color:gold;
+}
+
+.make-red {
+  color:red;
+}

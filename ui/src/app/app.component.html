@@ -1,0 +1,52 @@
+<div class="mat-typography">
+  <div class="image-wrap">
+    <img src="../assets/electrical-component.svg" class="center">
+  </div>
+</div>
+
+<mat-toolbar color="primary">
+  <span>Hardware Analizer</span>
+  <span class="spacer"></span>
+  Reload data:
+  <button mat-icon-button (click)="refresh()">
+    <mat-icon>refresh</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="mat-typography">
+  <mat-tab-group animationDuration="0ms" [(selectedIndex)]="activeTabIndex" (click)="onTabGroupClicked()">
+    <mat-tab label="Avaliable machines">
+      <app-machine></app-machine>
+    </mat-tab>
+    <mat-tab label="Table Data">
+      <div class="container mat-elevation-z8">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          <ng-container matColumnDef="numOfProcces">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Procces Count </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.process}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="cpuLoad">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> CPU Load </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.cpuLoad}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="memoryLoad">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Memory load </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.memoryLoad}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="lastUpdate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Last Update </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.timestamp | date:'medium'}} </mat-cell>
+          </ng-container>
+        </table>
+      </div>
+    </mat-tab>
+    <mat-tab label="Graphics">
+    </mat-tab>
+  </mat-tab-group>
+  <canvas id="lineChart"></canvas>
+  <canvas id="memoryChart"></canvas>
+  <canvas id="processChart"></canvas>
+</div>
+
