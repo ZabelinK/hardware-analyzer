@@ -1,0 +1,20 @@
+{
+  "/machine": {
+    "target": "http://0.0.0.0:8080/v2",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/proxy": ""
+    }
+  },
+  "/statistic/*": {
+    "target": "http://0.0.0.0:8080/v2",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/proxy": ""
+    }
+  }
+}
