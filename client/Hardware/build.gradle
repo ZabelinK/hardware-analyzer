@@ -1,9 +1,24 @@
-plugins {
-    id 'org.jetbrains.kotlin.multiplatform' version '1.3.61'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61'
+        classpath 'com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.3.4'
+    }
 }
+
+plugins {
+    id 'kotlinx-serialization'
+}
+
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'com.codingfeline.buildkonfig'
+
 repositories {
     mavenCentral()
     jcenter()
+    maven { url "https://dl.bintray.com/jetbrains/kotlin-native-dependencies" }
 }
 
 
@@ -14,6 +29,7 @@ kotlin {
     // For Windows, should be changed to e.g. mingwX64
 
     linuxX64("linux") {
+
 
         compilations.main {
         }
@@ -29,18 +45,46 @@ kotlin {
     sourceSets {
         // Note: To enable common source sets please comment out 'kotlin.import.noCommonSourceSets' property
         // in gradle.properties file and re-import your project in IDE.
+        commonMain {
+            dependencies {
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.3"
+                implementation kotlin('stdlib-common')
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$pSerializationVersion"
+            }
+        }
+        commonTest {
+        }
         linuxMain {
         }
         linuxTest {
         }
     }
 }
+
 dependencies {
+    linuxImplementation "io.ktor:ktor-client-core:$pKtorVersion"
+    linuxImplementation "io.ktor:ktor-client-serialization-native:$pKtorVersion"
+   // linuxImplementation "ktor-client-core-native':$pKtorVersion"
+    linuxImplementation("io.ktor:ktor-client-apache:$pKtorVersion")
     linuxImplementation "io.ktor:ktor-client-curl:$pKtorVersion"
+    linuxImplementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$pSerializationVersion"
+    linuxImplementation("io.ktor:ktor-client-json-native:$pKtorVersion")
+    linuxImplementation("io.ktor:ktor-client-json:$pKtorVersion")
+    linuxImplementation "io.ktor:ktor-client-gson:$pKtorVersion"
+    linuxImplementation "io.ktor:ktor-gson:$pKtorVersion"
+
     linuxImplementation "org.jetbrains.kotlinx:atomicfu:0.14.1"
     // ...
 }
 
+buildkonfig {
+    packageName = 'com.azf.hardware.build'
+
+    defaultConfigs {
+        buildConfigField 'STRING', 'BACKEND_API_PATH', pBackendApiPath
+        buildConfigField 'INT', 'SYNC_PERIOD', pSyncPeriodInSeconds
+    }
+}
 // Use the following Gradle tasks to run your application:
 // :runReleaseExecutableLinux - without debug symbols
 // :runDebugExecutableLinux - with debug symbols

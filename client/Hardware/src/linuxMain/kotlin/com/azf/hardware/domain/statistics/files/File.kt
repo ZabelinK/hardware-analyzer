@@ -1,4 +1,4 @@
-package com.azf.hardware.domain.statistics
+package com.azf.hardware.domain.statistics.files
 
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.allocArray
@@ -18,7 +18,7 @@ data class File(private val fileName: String) {
             return null
         }
 
-        val sb = StringBuilder();
+        val sb = StringBuilder()
 
         try {
             memScoped {
@@ -34,6 +34,6 @@ data class File(private val fileName: String) {
         } finally {
             fclose(file)
         }
-        return sb.toString();
+        return sb.toString()
     }
 }
