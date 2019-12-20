@@ -1,32 +1,26 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {StatModel} from '../models/statModel';
 import {MachineModel} from '../models/machineModel';
+import {catchError, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MachineService {
-  machines: MachineModel[] = [{
-    id: 1,
-    name: 'PersonalMachine1',
-    status: 'RUN'
-  }, {
-    id: 2,
-    name: 'PersonalMachine2',
-    status: 'FAILED'
-  }, {
-    id: 3,
-    name: 'PersonalMachine3',
-    status: 'RUNNING'
-  }, {
-    id: 4,
-    name: 'PersonalMachine4',
-    status: 'STOPPING'
-  }];
+
+  constructor(private http: HttpClient) {
+  }
 
   getLastOfMachines(): Observable<MachineModel[]> {
-    return of(this.machines);
+    return this.http.get<MachineModel[]>('/machine').pipe(
+        map((resp: any) => {
+          console.log(resp);
+          if (!resp) {
+            return null;
+          }
+          return resp;
+        })
+    );
   }
 }

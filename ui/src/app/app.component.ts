@@ -5,6 +5,9 @@ import {MatSort} from '@angular/material/sort';
 import {StatModel} from './models/statModel';
 import {MatTableDataSource} from '@angular/material';
 import {Chart} from 'chart.js';
+import {MachineModel} from './models/machineModel';
+import {MachineService} from './services/machine.service';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -13,17 +16,21 @@ import {Chart} from 'chart.js';
 })
 
 export class AppComponent implements OnInit {
-  displayedColumns: string[] = ['cpuLoad', 'memoryLoad', 'numOfProcces', 'lastUpdate'];
+  displayedColumns: string[] = ['cpu_load', 'memory_load', 'process', 'timestamp'];
   dataSource = null;
   pcData: StatModel[];
+  machines: MachineModel[];
 
   CPUChart: Chart = [];
+  cpuDataSet = [];
   MemoryChart: Chart = [];
+  memoryDataSet = [];
   ProccessChart: Chart = [];
+  processDataSet = [];
 
   show = true;
 
-  constructor(public dataService: PcDataService) {
+  constructor(public dataService: PcDataService, public machineService: MachineService) {
   }
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
@@ -45,34 +52,17 @@ export class AppComponent implements OnInit {
 
 
   public loadData() {
-    this.dataService.getLastAvailableData().subscribe(data => {
-      this.pcData = data;
-      this.dataSource = new MatTableDataSource<StatModel>(this.pcData);
-    });
   }
 
-  public cpuChart() {
+  public cpuChart(dataSet) {
+    const labelArray = [];
+    dataSet.forEach(entity => labelArray.push(entity.y.toLocaleString()));
     return new Chart('lineChart', {
       type: 'scatter',
-      labels: [new Date('2015-3-25 13:00').toLocaleString(),
-        new Date('2015-3-25 13:10').toLocaleString(),
-        new Date('2015-3-25 13:20').toLocaleString(),
-        new Date('2015-3-25 13:30').toLocaleString()],
+      labels: labelArray,
       data: {
         datasets: [{
-          data: [{
-            x: new Date('2015-3-25 13:00'),
-            y: 60
-          }, {
-            x: new Date('2015-3-25 13:10'),
-            y: 90
-          }, {
-            x: new Date('2015-3-25 13:20'),
-            y: 70
-          }, {
-            x: new Date('2015-3-25 13:30'),
-            y: 40
-          }],
+          data: dataSet,
           showLine: true,
           label: 'CPU Load'
         }]
@@ -92,28 +82,15 @@ export class AppComponent implements OnInit {
     });
   }
 
-  public memoryChart() {
+  public memoryChart(dataSet) {
+    const labelArray = [];
+    dataSet.forEach(entity => labelArray.push(entity.y.toLocaleString()));
     return new Chart('memoryChart', {
       type: 'scatter',
-      labels: [new Date('2015-3-25 13:00').toLocaleString(),
-        new Date('2015-3-25 13:10').toLocaleString(),
-        new Date('2015-3-25 13:20').toLocaleString(),
-        new Date('2015-3-25 13:30').toLocaleString()],
+      labels: labelArray,
       data: {
         datasets: [{
-          data: [{
-            x: new Date('2015-3-25 13:00'),
-            y: 70
-          }, {
-            x: new Date('2015-3-25 13:10'),
-            y: 50
-          }, {
-            x: new Date('2015-3-25 13:20'),
-            y: 40
-          }, {
-            x: new Date('2015-3-25 13:30'),
-            y: 76
-          }],
+          data: dataSet,
           showLine: true,
           label: 'Memory Load'
         }]
@@ -133,28 +110,15 @@ export class AppComponent implements OnInit {
     });
   }
 
-  public processChart() {
+  public processChart(dataSet) {
+    const labelArray = [];
+    dataSet.forEach(entity => labelArray.push(entity.y.toLocaleString()));
     return new Chart('processChart', {
       type: 'scatter',
-      labels: [new Date('2015-3-25 13:00').toLocaleString(),
-        new Date('2015-3-25 13:10').toLocaleString(),
-        new Date('2015-3-25 13:20').toLocaleString(),
-        new Date('2015-3-25 13:30').toLocaleString()],
+      labels: labelArray,
       data: {
         datasets: [{
-          data: [{
-            x: new Date('2015-3-25 13:00'),
-            y: 8
-          }, {
-            x: new Date('2015-3-25 13:10'),
-            y: 12
-          }, {
-            x: new Date('2015-3-25 13:20'),
-            y: 11
-          }, {
-            x: new Date('2015-3-25 13:30'),
-            y: 7
-          }],
+          data: dataSet,
           showLine: true,
           label: 'Process Count'
         }]
@@ -177,14 +141,40 @@ export class AppComponent implements OnInit {
   onTabGroupClicked() {
     if (this.activeTabIndex === 2) {
       this.show = false;
-      this.CPUChart = this.cpuChart();
-      this.MemoryChart = this.memoryChart();
-      this.ProccessChart = this.processChart();
+      this.CPUChart = this.cpuChart(this.cpuDataSet);
+      this.MemoryChart = this.memoryChart(this.memoryDataSet);
+      this.ProccessChart = this.processChart(this.processDataSet);
     } else {
       this.CPUChart.destroy();
       this.MemoryChart.destroy();
       this.ProccessChart.destroy();
     }
+  }
+
+  machineIdChangeLoad(machineId: number) {
+    this.dataService.getLastAvailableData(machineId).subscribe(stat => {
+      this.pcData = stat;
+      this.dataSource = new MatTableDataSource<StatModel>(this.pcData);
+      this.dataSource.sort = this.sort;
+
+      this.pcData.forEach(entity => {
+        const yCpu = entity.cpu_load;
+        const yMem = entity.memory_load;
+        const yProc = entity.process;
+
+        const datePipe = new DatePipe('en-US');
+        const timeStamp = entity.timestamp * 1000;
+        const xData = datePipe.transform(timeStamp, 'yyyy-MM-dd HH:mm');
+
+        this.cpuDataSet.push({x: xData , y: yCpu});
+        this.memoryDataSet.push({x: xData , y: yMem});
+        this.processDataSet.push({x: xData , y: yProc});
+      });
+
+      console.log(this.cpuDataSet);
+      console.log(this.memoryDataSet);
+      console.log(this.processDataSet);
+    });
   }
 }
 

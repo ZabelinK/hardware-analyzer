@@ -16,14 +16,12 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckboxModule, MatRadioModule, MatTabsModule} from '@angular/material';
 import { MachineComponent } from './machine/machine.component';
-import { ChartsComponent } from './charts/charts.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     MachineComponent,
-    ChartsComponent,
   ],
   imports: [
     BrowserModule,

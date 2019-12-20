@@ -1,7 +1,7 @@
 export class StatModel {
-  machineId: number;
+  machine_id: number;
   process: number;
-  cpuLoad: number;
-  memoryLoad: number;
-  timestamp: string;
+  cpu_load: number;
+  memory_load: number;
+  timestamp: number;
 }

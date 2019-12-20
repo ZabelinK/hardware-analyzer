@@ -1,8 +1,9 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MachineService} from '../services/machine.service';
-import {MatTableDataSource} from '@angular/material';
+import {MatRadioChange, MatTableDataSource} from '@angular/material';
 import {StatModel} from '../models/statModel';
 import {MachineModel} from '../models/machineModel';
+import {SelectionModel} from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-machine',
@@ -15,7 +16,11 @@ export class MachineComponent implements OnInit {
 
   displayedColumns: string[] = ['select', 'image', 'machineId', 'status'];
 
+  selection = new SelectionModel<MachineModel>(false, []);
+
   machines: MachineModel[];
+
+  @Output() machineIdCHange = new EventEmitter();
 
   constructor(public machineService: MachineService) {
   }
@@ -39,4 +44,12 @@ export class MachineComponent implements OnInit {
     return status === 'STOPED' || status === 'STOPPING';
   }
 
+  checkBoxChange(event: MatRadioChange, row: any) {
+    if (event) {
+      this.selection.toggle(row);
+      this.machineIdCHange.emit(this.selection.selected[0].id);
+    } else {
+      return null;
+    }
+  }
 }
