@@ -35,7 +35,6 @@ class PowerOutPollingThread(Thread):
         self.server.starttls()
         self.server.login(Config.FROM, "password")
         self.server.sendmail(Config.FROM, [Config.TO], "TEST E-MAIL")
-        self.server.quit()
         print("TEST!")
         while True:
             print("TEST!")
@@ -59,9 +58,7 @@ class PowerOutPollingThread(Thread):
                     "",
                     "ALERT! The following machines are down - %s" % str(powerOutMachines)
                 ))
-                self.server.login(Config.FROM, "password")
                 self.server.sendmail(Config.FROM, [Config.TO], BODY)
-                self.server.quit()
             sleep(5)    
 
 def main():
