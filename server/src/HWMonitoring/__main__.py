@@ -33,7 +33,7 @@ class PowerOutPollingThread(Thread):
     def run(self):
         self.server.ehlo()
         self.server.starttls()
-        self.server.login(Config.FROM, "password")
+        self.server.login(Config.FROM, Config.PASS)
         self.server.sendmail(Config.FROM, [Config.TO], "TEST E-MAIL")
         print("TEST!")
         while True:
@@ -48,7 +48,7 @@ class PowerOutPollingThread(Thread):
                     powerOutMachines.append(machine.name_)
                 else:
                     machine.status_ = "RUNNING"
-            db.connection.commit()
+                db.session.commit()
 
             if powerOutMachines:
                 BODY = "\r\n".join((
@@ -58,6 +58,7 @@ class PowerOutPollingThread(Thread):
                     "",
                     "ALERT! The following machines are down - %s" % str(powerOutMachines)
                 ))
+                self.server.login(Config.FROM, Config.PASS)
                 self.server.sendmail(Config.FROM, [Config.TO], BODY)
             sleep(5)    
 

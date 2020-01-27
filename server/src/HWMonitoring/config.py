@@ -10,6 +10,7 @@ class Config(object):
 
     HOST = "smtp.gmail.com"
     SUBJECT = "MACHINES ARE DOWN"
-    TO = "zabelinkirillv@gmail.com"
-    FROM = "kirill91goo@gmail.com"
+    TO = "aspy11984@gmail.com"
+    FROM = "aspy11984@gmail.com"
+    PASS = "Enter_PASS"
     MAX_DOWN_TIME = 300 # 5 min
