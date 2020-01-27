@@ -17,7 +17,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.list
 
 class MachineRepositoryImpl : MachineRepository {
 
@@ -60,9 +59,12 @@ class MachineRepositoryImpl : MachineRepository {
                         contentType(ContentType.Application.Json)
                         body = Machine(0, machineId, machineStatus)
                     }
-                }.getOrNull()
-                client.close()
-                result
+                }
+
+                println("Post new machine exception: ${result.exceptionOrNull()}")
+                println("machine ${result.getOrNull()}")
+                //client.close()
+                result.getOrNull()
             }
         }
     }
@@ -76,7 +78,7 @@ class MachineRepositoryImpl : MachineRepository {
             }.getOrNull()
 
             println("result: $result")
-            client.close()
+            //client.close()
 
             result
         }
@@ -86,9 +88,7 @@ class MachineRepositoryImpl : MachineRepository {
         println("BUILD MACHINE")
         return HttpClient() {
             install(JsonFeature) {
-                serializer = KotlinxSerializer().apply {
-                    register(Machine.serializer().list)
-                }
+                serializer = KotlinxSerializer()
             }
         }
     }

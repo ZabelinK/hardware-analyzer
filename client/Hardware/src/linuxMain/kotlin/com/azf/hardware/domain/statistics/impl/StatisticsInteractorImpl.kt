@@ -18,13 +18,14 @@ class StatisticsInteractorImpl : StatisticsInteractor {
     override suspend fun collectAndSendStatistic(): Statistic {
         println("collect statistic")
         val statistic = collectStatistic()
-        println("start sending")
+        println("start sending $statistic")
         val result = statisticsRepository.sendStatisticAsync(statistic).await()
         println("success stat sending : $result")
         return statistic
     }
 
     private fun collectStatistic() = Statistic(
+        id = 0,
         machine_id = machineRepository.machine?.id ?: 0,
         process = getProcCount(),
         memory_load = getMemoryLoad(),

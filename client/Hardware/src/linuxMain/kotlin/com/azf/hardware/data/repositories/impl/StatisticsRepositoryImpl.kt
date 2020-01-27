@@ -21,23 +21,26 @@ class StatisticsRepositoryImpl : StatisticsRepository {
             println("async sending")
             val client = buildHttpClient()
 
-            val result = client.post<Statistic> {
-                url("$API_URL?machine=${statistic.machine_id} ")
-                contentType(ContentType.Application.Json)
-                body = statistic
+
+            val result = kotlin.runCatching {
+                client.post<Statistic> {
+                    url("$API_URL?machine=${statistic.machine_id} ")
+                    contentType(ContentType.Application.Json)
+                    body = statistic
+                }
             }
 
-            client.close()
-            result
+            println("exceprion: ${result.exceptionOrNull()}")
+            println("result: ${result.getOrNull()}")
+            //client.close()
+            result.getOrNull()
         }
     }
 
     private fun buildHttpClient(): HttpClient {
         return HttpClient() {
             install(JsonFeature) {
-                serializer = KotlinxSerializer().apply {
-                    register(Statistic.serializer())
-                }
+                serializer = KotlinxSerializer()
             }
         }
     }
