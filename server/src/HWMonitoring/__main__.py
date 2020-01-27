@@ -21,7 +21,7 @@ from threading import Thread
 import smtplib
 import time
 
-MAX_TIME = 300
+MAX_TIME = 60
 
 class PowerOutPollingThread(Thread):
     def __init__(self, name):
