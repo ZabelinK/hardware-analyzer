@@ -1,7 +1,7 @@
 package com.azf.hardware.domain.statistics.impl
 
-import com.azf.hardware.data.repositories.impl.MachineRepositoryImpl
-import com.azf.hardware.data.repositories.impl.StatisticsRepositoryImpl
+import com.azf.hardware.data.repositories.api.MachineRepository
+import com.azf.hardware.data.repositories.api.StatisticsRepository
 import com.azf.hardware.domain.statistics.api.StatisticsInteractor
 import com.azf.hardware.domain.statistics.models.statistics.Statistic
 import kotlinx.cinterop.CPointer
@@ -10,23 +10,22 @@ import kotlinx.cinterop.toKString
 import platform.posix.*
 
 
-class StatisticsInteractorImpl : StatisticsInteractor {
-
-    private val machineRepository = MachineRepositoryImpl()
-    private val statisticsRepository = StatisticsRepositoryImpl()
-
-    override suspend fun collectAndSendStatistic(): Statistic {
-        println("collect statistic")
+class StatisticsInteractorImpl(
+    private val machineRepository: MachineRepository,
+    private val statisticsRepository: StatisticsRepository
+) : StatisticsInteractor {
+    override suspend fun collectAndSendStatistic(): Statistic? {
+        println("collect statistic ")
         val statistic = collectStatistic()
         println("start sending $statistic")
-        val result = statisticsRepository.sendStatisticAsync(statistic).await()
+        val result = statisticsRepository.sendStatisticAsync(statistic)
         println("success stat sending : $result")
-        return statistic
+        return result
     }
 
-    private fun collectStatistic() = Statistic(
+    private suspend fun collectStatistic() = Statistic(
         id = 0,
-        machine_id = machineRepository.machine?.id ?: 0,
+        machine_id = machineRepository.fetchCurrentMachineInfo()?.id ?: 0,
         process = getProcCount(),
         memory_load = getMemoryLoad(),
         timestamp = time(null),

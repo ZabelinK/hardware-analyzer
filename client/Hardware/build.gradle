@@ -1,10 +1,12 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://kotlin.bintray.com/kotlin-dev' }
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-dev/' }
     }
     dependencies {
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61'
-        classpath 'com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.4.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$pKotlinVersion"
+        classpath 'com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.5.0'
     }
 }
 
@@ -30,7 +32,6 @@ kotlin {
 
     linuxX64("linux") {
 
-
         compilations.main {
         }
         binaries {
@@ -41,22 +42,42 @@ kotlin {
                 runTask?.args('')
             }
         }
+
+        if (pCoverageEnabled.toBoolean()) {
+
+            println("${compilations["main"].output.classesDirs.singleFile.absolutePath}")
+            //binaries.getTest("DEBUG").freeCompilerArgs += "-Xlibrary-to-cover=${compilations["test"].output.classesDirs.singleFile.absolutePath}"
+            binaries.getTest("DEBUG").freeCompilerArgs += "-Xcoverage"
+            //binaries.getTest("DEBUG").freeCompilerArgs += "-library ${compilations["main"].output.classesDirs.singleFile.absolutePath}"
+        }
     }
+
+
     sourceSets {
         // Note: To enable common source sets please comment out 'kotlin.import.noCommonSourceSets' property
         // in gradle.properties file and re-import your project in IDE.
         commonMain {
             dependencies {
                 implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.3"
-                implementation kotlin('stdlib-common')
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-common:$pKotlinVersion"
                 implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$pSerializationVersion"
+                implementation "io.ktor:ktor-client-core:$pKtorVersion"
             }
         }
         commonTest {
+            dependencies {
+                implementation "org.jetbrains.kotlin:kotlin-test-common:$pKotlinVersion"
+                implementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$pKotlinVersion"
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.3"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-common:$pKotlinVersion"
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$pSerializationVersion"
+                implementation "io.ktor:ktor-client-core:$pKtorVersion"
+            }
         }
         linuxMain {
         }
         linuxTest {
+
         }
     }
 }
@@ -73,16 +94,46 @@ dependencies {
     linuxImplementation "io.ktor:ktor-client-gson:$pKtorVersion"
     linuxImplementation "io.ktor:ktor-gson:$pKtorVersion"
 
-    linuxImplementation "org.jetbrains.kotlinx:atomicfu:0.14.1"
+    linuxImplementation "org.jetbrains.kotlinx:atomicfu:0.14.2"
+
+    linuxApi "io.ktor:ktor-client-mock:$pKtorVersion"
+    linuxApi "io.ktor:ktor-client-mock-native:$pKtorVersion"
+
     // ...
 }
+
+if (pCoverageEnabled.toBoolean()) {
+    task createCoverageReport {
+        dependsOn("linuxTest")
+
+        description = "Create coverage report"
+
+        doLast {
+            def testDebugBinary = kotlin.targets["linux"].binaries.getTest("DEBUG").outputFile
+            exec {
+                commandLine("llvm-profdata", "merge", "${testDebugBinary}.profraw", "-o", "${testDebugBinary}.profdata")
+            }
+            exec {
+                commandLine("llvm-cov", "report", "${testDebugBinary}", "-instr-profile", "${testDebugBinary}.profdata")
+            }
+        }
+    }
+}
+
 
 buildkonfig {
     packageName = 'com.azf.hardware.build'
 
     defaultConfigs {
         buildConfigField 'STRING', 'BACKEND_API_PATH', pBackendApiPath
-        buildConfigField 'INT', 'SYNC_PERIOD', pSyncPeriodInSeconds
+        buildConfigField 'LONG', 'SYNC_PERIOD', pSyncPeriodInSeconds
+        buildConfigField 'BOOLEAN', 'IS_TEST', 'false'
+    }
+
+    defaultConfigs("test") {
+        buildConfigField 'STRING', 'BACKEND_API_PATH', pBackendApiPath
+        buildConfigField 'LONG', 'SYNC_PERIOD', '2'
+        buildConfigField 'BOOLEAN', 'IS_TEST', 'true'
     }
 }
 // Use the following Gradle tasks to run your application:

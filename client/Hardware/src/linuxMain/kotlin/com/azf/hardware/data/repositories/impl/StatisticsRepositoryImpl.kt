@@ -4,44 +4,30 @@ import com.azf.hardware.build.BuildKonfig
 import com.azf.hardware.data.repositories.api.StatisticsRepository
 import com.azf.hardware.domain.statistics.models.statistics.Statistic
 import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.request.post
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class StatisticsRepositoryImpl : StatisticsRepository {
+class StatisticsRepositoryImpl(private val httpClient: HttpClient) : StatisticsRepository {
 
-    override suspend fun sendStatisticAsync(statistic: Statistic) = coroutineScope<Deferred<Statistic?>> {
-        async {
-            println("async sending")
-            val client = buildHttpClient()
+    override suspend fun sendStatisticAsync(statistic: Statistic) = withContext(Dispatchers.Default) {
+        println("async sending")
+        kotlin.runCatching {
+            httpClient.postStatistic(statistic)
+        }.onFailure {
+            println("exception: $httpClient")
+        }.getOrNull()
 
-
-            val result = kotlin.runCatching {
-                client.post<Statistic> {
-                    url("$API_URL?machine=${statistic.machine_id} ")
-                    contentType(ContentType.Application.Json)
-                    body = statistic
-                }
-            }
-
-            println("exceprion: ${result.exceptionOrNull()}")
-            println("result: ${result.getOrNull()}")
-            //client.close()
-            result.getOrNull()
-        }
     }
 
-    private fun buildHttpClient(): HttpClient {
-        return HttpClient() {
-            install(JsonFeature) {
-                serializer = KotlinxSerializer()
-            }
+    private suspend fun HttpClient.postStatistic(statistic: Statistic): Statistic {
+        return post {
+            url("$API_URL?machine=${statistic.machine_id} ")
+            contentType(ContentType.Application.Json)
+            body = statistic
         }
     }
 

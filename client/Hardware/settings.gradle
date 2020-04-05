@@ -2,10 +2,10 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "kotlin-multiplatform") {
-                useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61")
+                useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:$pKotlinVersion")
             }
             if (requested.id.id == "kotlinx-serialization") {
-                useModule("org.jetbrains.kotlin:kotlin-serialization:1.3.61")
+                useModule("org.jetbrains.kotlin:kotlin-serialization:$pKotlinVersion")
             }
         }
     }
@@ -14,6 +14,7 @@ pluginManagement {
         mavenCentral()
         jcenter()
         maven { url 'https://dl.bintray.com/kotlin/kotlin-dev' }
+        maven { url 'https://kotlin.bintray.com/kotlin-dev' }
         maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
         maven { url 'https://plugins.gradle.org/m2/' }
     }

@@ -6,41 +6,45 @@ import com.azf.hardware.domain.statistics.files.File
 import com.azf.hardware.domain.statistics.models.machine.Machine
 import com.azf.hardware.domain.statistics.models.machine.MachineStatus
 import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
-class MachineRepositoryImpl : MachineRepository {
+class MachineRepositoryImpl(private val httpClient: HttpClient) : MachineRepository {
 
-    private var isInit: Boolean = false
 
-    override var machine: Machine? = null
+    private var machineCache: Machine? = null
 
-    init {
-        initMachineRepository()
+    private val mutex = Mutex()
+
+    override suspend fun fetchCurrentMachineInfo(): Machine? {
+        if (machineCache != null) {
+            return machineCache
+        } else {
+            mutex.withLock {
+                initMachineRepository()
+                return machineCache
+            }
+        }
     }
 
     private fun getMachineIdFromFile(): String = File(
         MACHINE_ID_FILE_PATH
     ).read()?.trim() ?: "UNKNOWN"
 
-    private fun initMachineRepository() {
-        if (isInit) return
-
-        runBlocking {
-            val machines = requestAllMachinesAsync()
+    private suspend fun initMachineRepository() {
+        withContext(Dispatchers.Default) {
+            val machines = async { requestAllMachinesAsync() }
             val machineId = getMachineIdFromFile()
             val machineFromServer = machines.await()?.firstOrNull { it.name == machineId }
-            machine = machineFromServer ?: postNewMachineAsync(machineId, MachineStatus.RUN).await()
-            isInit = true
+            machineCache = machineFromServer ?: postNewMachineAsync(machineId, MachineStatus.RUN)
             println("inited machine")
         }
     }
@@ -48,50 +52,27 @@ class MachineRepositoryImpl : MachineRepository {
     private suspend fun postNewMachineAsync(
         machineId: String = "UNKNOWN",
         machineStatus: MachineStatus = MachineStatus.FAILED
-    ): Deferred<Machine?> {
-        return coroutineScope<Deferred<Machine?>> {
-            async {
-                println("POST NEW MACHINE: $machineId")
-                val client = buildHttpClient()
-                val result = kotlin.runCatching {
-                    client.post<Machine> {
-                        url(API_URL)
-                        contentType(ContentType.Application.Json)
-                        body = Machine(0, machineId, machineStatus)
-                    }
-                }
+    ): Machine? {
+        println("POST NEW MACHINE: $machineId")
 
-                println("Post new machine exception: ${result.exceptionOrNull()}")
-                println("machine ${result.getOrNull()}")
-                //client.close()
-                result.getOrNull()
+        return kotlin.runCatching {
+            httpClient.post<Machine> {
+                url(API_URL)
+                contentType(ContentType.Application.Json)
+                body = Machine(0, machineId, machineStatus)
             }
-        }
+
+        }.onFailure {
+            println("Post new machine exception: $it")
+        }.onSuccess {
+            println("machine $it")
+        }.getOrThrow()
     }
 
-    private suspend fun requestAllMachinesAsync() = coroutineScope {
-        async {
-            println("start async")
-            val client = buildHttpClient()
-            val result = kotlin.runCatching {
-                client.get<List<Machine>>(API_URL)
-            }.getOrNull()
+    private suspend fun requestAllMachinesAsync() = kotlin.runCatching {
+        httpClient.get<List<Machine>>(API_URL)
+    }.getOrNull()
 
-            println("result: $result")
-            //client.close()
-
-            result
-        }
-    }
-
-    private fun buildHttpClient(): HttpClient {
-        println("BUILD MACHINE")
-        return HttpClient() {
-            install(JsonFeature) {
-                serializer = KotlinxSerializer()
-            }
-        }
-    }
 
     companion object {
         val API_URL = "${BuildKonfig.BACKEND_API_PATH}/machine"
