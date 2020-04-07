@@ -4,3 +4,5 @@ setuptools >= 21.0.0
 sqlalchemy 
 flask-sqlalchemy == 2.1.0
 flask-migrate
+Werkzeug==0.16.1
+flask_testing

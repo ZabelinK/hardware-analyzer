@@ -17,8 +17,9 @@ class TestStatisticController(BaseTestCase):
 
         Add new statistic
         """
-        statistic = Statistic()
         query_string = [('machine', 789)]
+        statistic = {'process' : 1 , 'cpu_load' : 52, 'memory_load' : 35, 'timestamp' : 124324}
+        print(json.dumps(statistic))
         response = self.client.open(
             '/v2/statistic',
             method='POST',

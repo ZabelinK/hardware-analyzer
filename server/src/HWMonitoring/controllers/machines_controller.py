@@ -37,9 +37,12 @@ def delete_machine(machineId):  # noqa: E501
 
     :rtype: None
     """
-    db.session.delete(Machine.query.get(machineId))
-    db.commit()
-    return "SUCCESS"
+    if Machine.query.get(machineId):
+        db.session.delete(Machine.query.get(machineId))
+        db.session.commit()
+        return "SUCCESS"
+    else:
+        abort(404)
 
 def get_machine(machineId):  # noqa: E501
     """Get machine by id
@@ -55,8 +58,6 @@ def get_machine(machineId):  # noqa: E501
         return Machine.query.get(machineId).to_dict()
     except AttributeError:
         abort(404)
-    except Exception:
-        raise
 
 def get_machines():
     try:
