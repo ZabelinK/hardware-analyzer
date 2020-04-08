@@ -47,7 +47,7 @@ class Statistic(Model, db.Model):
             'memory_load' : self.memory_load_,
             'timestamp' : self.timestamp_
         }
-
+    
     @classmethod
     def from_dict(cls, dikt) -> 'Statistic':
         """Returns the dict as a model
@@ -67,7 +67,7 @@ class Statistic(Model, db.Model):
         :return: The id of this Statistic.
         :rtype: int
         """
-        return self._id
+        return self.id_
 
     @id.setter
     def id(self, id: int):
@@ -78,7 +78,7 @@ class Statistic(Model, db.Model):
         :type id: int
         """
 
-        self._id = id
+        self.id_ = id
 
     @property
     def machine_id(self) -> int:
@@ -88,7 +88,7 @@ class Statistic(Model, db.Model):
         :return: The machine_id of this Statistic.
         :rtype: int
         """
-        return self._machine_id
+        return self.machine_id_
 
     @machine_id.setter
     def machine_id(self, machine_id: int):
@@ -99,7 +99,7 @@ class Statistic(Model, db.Model):
         :type machine_id: int
         """
 
-        self._machine_id = machine_id
+        self.machine_id_ = machine_id
 
     @property
     def process(self) -> int:
@@ -109,7 +109,7 @@ class Statistic(Model, db.Model):
         :return: The process of this Statistic.
         :rtype: int
         """
-        return self._process
+        return self.process_
 
     @process.setter
     def process(self, process: int):
@@ -120,7 +120,7 @@ class Statistic(Model, db.Model):
         :type process: int
         """
 
-        self._process = process
+        self.process_ = process
 
     @property
     def cpu_load(self) -> int:
@@ -130,7 +130,7 @@ class Statistic(Model, db.Model):
         :return: The cpu_load of this Statistic.
         :rtype: int
         """
-        return self._cpu_load
+        return self.cpu_load_
 
     @cpu_load.setter
     def cpu_load(self, cpu_load: int):
@@ -141,7 +141,7 @@ class Statistic(Model, db.Model):
         :type cpu_load: int
         """
 
-        self._cpu_load = cpu_load
+        self.cpu_load_ = cpu_load
 
     @property
     def memory_load(self) -> int:
@@ -151,7 +151,7 @@ class Statistic(Model, db.Model):
         :return: The memory_load of this Statistic.
         :rtype: int
         """
-        return self._memory_load
+        return self.memory_load_
 
     @memory_load.setter
     def memory_load(self, memory_load: int):
@@ -162,7 +162,7 @@ class Statistic(Model, db.Model):
         :type memory_load: int
         """
 
-        self._memory_load = memory_load
+        self.memory_load_ = memory_load
 
     @property
     def timestamp(self) -> datetime:
@@ -172,7 +172,7 @@ class Statistic(Model, db.Model):
         :return: The timestamp of this Statistic.
         :rtype: datetime
         """
-        return self._timestamp
+        return self.timestamp_
 
     @timestamp.setter
     def timestamp(self, timestamp: datetime):
@@ -183,4 +183,4 @@ class Statistic(Model, db.Model):
         :type timestamp: datetime
         """
 
-        self._timestamp = timestamp
+        self.timestamp_ = timestamp

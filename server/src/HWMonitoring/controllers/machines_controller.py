@@ -60,7 +60,4 @@ def get_machine(machineId):  # noqa: E501
         abort(404)
 
 def get_machines():
-    try:
-        return [m.to_dict() for m in Machine.query.all()]
-    except Exception:
-        raise
+    return [m.to_dict() for m in Machine.query.all()]

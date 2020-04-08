@@ -1,3 +1,6 @@
 [run]
 include=./*.py
-omit=./test/*
+omit=
+	./test/*
+	encoder.py
+	util.py

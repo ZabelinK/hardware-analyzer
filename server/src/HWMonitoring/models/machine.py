@@ -63,7 +63,7 @@ class Machine(Model, db.Model):
         :return: The id of this Machine.
         :rtype: int
         """
-        return self._id
+        return self.id_
 
     @id.setter
     def id(self, id: int):
@@ -74,7 +74,7 @@ class Machine(Model, db.Model):
         :type id: int
         """
 
-        self._id = id
+        self.id_ = id
 
     @property
     def name(self) -> str:
@@ -84,7 +84,7 @@ class Machine(Model, db.Model):
         :return: The name of this Machine.
         :rtype: str
         """
-        return self._name
+        return self.name_
 
     @name.setter
     def name(self, name: str):
@@ -95,7 +95,7 @@ class Machine(Model, db.Model):
         :type name: str
         """
 
-        self._name = name
+        self.name_ = name
 
     @property
     def status(self) -> str:
@@ -105,22 +105,7 @@ class Machine(Model, db.Model):
         :return: The status of this Machine.
         :rtype: str
         """
-        return self._status
-
-    @status.setter
-    def status(self, status: str):
-        """Sets the status of this Machine.
+        return self.status_
 
 
-        :param status: The status of this Machine.
-        :type status: str
-        """
-        allowed_values = ["RUN", "RUNNING", "STOPED", "STOPPING", "FAILED"]  # noqa: E501
-        if status not in allowed_values:
-            raise ValueError(
-                "Invalid value for `status` ({0}), must be one of {1}"
-                .format(status, allowed_values)
-            )
-
-        self._status = status
 
