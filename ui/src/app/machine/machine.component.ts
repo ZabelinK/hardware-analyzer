@@ -18,7 +18,7 @@ export class MachineComponent implements OnInit {
 
   selection = new SelectionModel<MachineModel>(false, []);
 
-  machines: MachineModel[];
+  machines: MachineModel[] = [];
 
   @Output() machineIdCHange = new EventEmitter();
 
@@ -44,7 +44,7 @@ export class MachineComponent implements OnInit {
     return status === 'STOPED' || status === 'STOPPING';
   }
 
-  checkBoxChange(event: MatRadioChange, row: any) {
+  checkBoxChange(event: any, row: any) {
     if (event) {
       this.selection.toggle(row);
       this.machineIdCHange.emit(this.selection.selected[0].id);

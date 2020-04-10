@@ -15,10 +15,10 @@
 
 <div class="mat-typography">
   <mat-tab-group animationDuration="0ms" [(selectedIndex)]="activeTabIndex" (click)="onTabGroupClicked()">
-    <mat-tab label="Avaliable machines">
+    <mat-tab label="Avaliable machines" aria-label="Avaliable machines">
       <app-machine (machineIdCHange)="machineIdChangeLoad($event)"></app-machine>
     </mat-tab>
-    <mat-tab label="Table Data">
+    <mat-tab label="Table Data" aria-label="Table Data">
       <div class="container mat-elevation-z8">
         <table mat-table [dataSource]="dataSource" matSort>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -37,15 +37,15 @@
           </ng-container>
           <ng-container matColumnDef="timestamp">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Last Update </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.timestamp * 1000 | date:'yyyy-MM-dd HH:mm'}} </mat-cell>
+            <mat-cell *matCellDef="let element" format="yyyy-MM-dd HH:mm"> {{element.timestamp * 1000 | date:'yyyy-MM-dd HH:mm'}} </mat-cell>
           </ng-container>
         </table>
       </div>
     </mat-tab>
-    <mat-tab label="Graphics">
+    <mat-tab label="Graphics" aria-label="Graphics">
     </mat-tab>
   </mat-tab-group>
-  <canvas id="lineChart"></canvas>
+  <canvas id="lineChart" format='yyyy-MM-dd HH:mm'></canvas>
   <canvas id="memoryChart"></canvas>
   <canvas id="processChart"></canvas>
 </div>

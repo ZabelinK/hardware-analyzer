@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {PcDataService} from './services/pc-data.service';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
@@ -27,6 +27,8 @@ export class AppComponent implements OnInit {
   memoryDataSet = [];
   ProccessChart: Chart = [];
   processDataSet = [];
+  @Input() format;
+  @Input() statisticFormat;
 
   show = true;
 
